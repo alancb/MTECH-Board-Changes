@@ -1,0 +1,497 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  background: #f5f5f5;
+  color: #222;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── HEADER ──────────────────────────────────────────────────────────────── */
+.app-header {
+  background: #1a3a5c;
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.app-header h1 { font-size: 17px; font-weight: 600; }
+.app-header p  { font-size: 12px; color: #aac4e0; }
+
+/* ─── LAYOUT ──────────────────────────────────────────────────────────────── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── SETTINGS PANEL ─────────────────────────────────────────────────────── */
+.settings-panel {
+  width: 440px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-group { display: flex; flex-direction: column; gap: 7px; }
+.settings-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #666;
+}
+
+select:not(.group-assign-select), input[type=range] { width: 100%; }
+select {
+  padding: 5px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #fff;
+}
+select:focus { outline: 2px solid #1a3a5c; outline-offset: 1px; }
+
+.slider-row { display: flex; align-items: center; gap: 8px; }
+input[type=range] { flex: 1; accent-color: #1a3a5c; }
+.slider-value {
+  min-width: 18px;
+  text-align: right;
+  font-weight: 600;
+  color: #1a3a5c;
+}
+
+.radio-group { display: flex; flex-direction: column; gap: 5px; }
+.radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.radio-group input[type=radio] { accent-color: #1a3a5c; }
+
+/* District drag list */
+.district-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.district-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 7px;
+  background: #f9f9f9;
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+  cursor: grab;
+  user-select: none;
+  transition: background .1s;
+}
+.district-item:hover { background: #eef4ff; }
+.district-item.dragging { opacity: .45; background: #dde8f8; }
+.drag-handle { color: #bbb; font-size: 14px; line-height: 1; cursor: grab; }
+.district-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.district-note { color: #999; font-size: 11px; }
+
+.settings-note {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+.settings-note strong { color: #555; }
+
+/* ─── TIMELINE AREA ───────────────────────────────────────────────────────── */
+.timeline-area {
+  flex: 1;
+  overflow: auto;
+  background: #fafafa;
+  position: relative;
+}
+
+#timeline-wrapper {
+  overflow: auto;
+  height: 100%;
+}
+
+#timeline-canvas {
+  position: relative;
+  padding: 0 40px 40px 0;
+  min-height: 100%;
+}
+
+/* Year header — just year numbers */
+.year-header {
+  position: relative;
+  height: 28px;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+.year-tick {
+  position: absolute;
+  font-size: 11px;
+  color: #aaa;
+  top: 7px;
+  transform: translateX(-50%);
+}
+
+/* Milestone row — key events, sits between year header and first section */
+.milestone-row {
+  position: relative;
+  height: 46px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 2px;
+  flex-shrink: 0;
+}
+.milestone {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: help;
+  pointer-events: all;
+}
+.ms-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--ec, #888);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+  outline: 1.5px solid var(--ec, #888);
+}
+.ms-text { display: flex; flex-direction: column; line-height: 1.25; }
+.ms-text b     { font-size: 10px; font-weight: 700; color: var(--ec, #444); white-space: nowrap; }
+.ms-text small { font-size: 9px;  color: #888; white-space: nowrap; }
+
+/* Section headers */
+.section-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #555;
+  padding: 10px 0 4px 162px;
+  border-bottom: 1px solid #e8e8e8;
+  margin-bottom: 2px;
+}
+
+/* Rows */
+.timeline-row {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  margin-bottom: 2px;
+}
+.row-label {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  padding-right: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track {
+  position: relative;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* Bars */
+.bar {
+  position: absolute;
+  top: 4px;
+  height: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 7px;
+  gap: 5px;
+  transition: filter .15s;
+  cursor: default;
+}
+.bar:hover { filter: brightness(1.1); z-index: 10; }
+.bar-faded { opacity: .55; }
+.bar-hatched {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0,0,0,.07) 0px,
+    rgba(0,0,0,.07) 2px,
+    transparent 2px,
+    transparent 8px
+  ) !important;
+  border: 1px dashed #ccc;
+}
+.bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+.bar-sublabel {
+  font-size: 10px;
+  color: rgba(255,255,255,.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+
+/* ─── GROUP MANAGEMENT ────────────────────────────────────────────────────── */
+.add-group-btn {
+  width: 100%;
+  padding: 5px 8px;
+  background: #f5f3ff;
+  border: 1px dashed #a78bfa;
+  border-radius: 4px;
+  color: #6d28d9;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .1s;
+  margin-bottom: 2px;
+}
+.add-group-btn:hover { background: #ede9fe; }
+
+.group-block {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  background: #f9fafb;
+  border-left: 4px solid var(--gc, #7c3aed);
+}
+.group-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.group-name-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  outline: none;
+  min-width: 0;
+}
+.group-name-input:focus {
+  background: #fff;
+  border-bottom: 1px solid #9ca3af;
+}
+.group-seat-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.icon-btn {
+  border: none;
+  background: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+.icon-btn:hover { color: #ef4444; }
+.remove-btn { font-size: 13px; margin-left: auto; }
+
+.group-members {
+  padding: 3px;
+  background: #fff;
+  min-height: 28px;
+}
+.group-empty-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 5px;
+  font-style: italic;
+}
+.district-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Per-group term length select */
+.group-term-select {
+  font-size: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  padding: 1px 3px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: auto !important;
+}
+
+/* Group-assign dropdown */
+.group-assign-select {
+  margin-left: auto;
+  font-size: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  background: #fff;
+  color: #6b7280;
+  padding: 1px 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ─── EARLY DEPARTURES ───────────────────────────────────────────────────── */
+.settings-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+.resignation-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 2px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.resignation-row:last-child { border-bottom: none; }
+.resignation-label {
+  flex: 1;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.resignation-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.resignation-dist {
+  font-size: 10px;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.resignation-date {
+  font-size: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  padding: 2px 4px;
+  color: #374151;
+  background: #fff;
+  flex-shrink: 0;
+  width: auto !important;
+}
+
+/* Ungrouped sub-label */
+.settings-sublabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #9ca3af;
+  margin: 8px 0 3px;
+}
+
+/* ─── EVENT MARKERS ──────────────────────────────────────────────────────── */
+.marker-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Today line */
+.today-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #16a34a;
+  pointer-events: all;
+  cursor: help;
+  z-index: 26;
+}
+.today-label {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
+  background: rgba(255,255,255,.92);
+  border: 1px solid #16a34a;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* Key event lines — labels live in year-header, not here */
+.event-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ev-color, #c82333);
+  opacity: .5;
+  pointer-events: all;
+  cursor: help;
+  z-index: 22;
+}
+
+/* ─── PRINT ───────────────────────────────────────────────────────────────── */
+@media print {
+  .settings-panel { display: none; }
+  .app-header { background: #000; }
+  .app-body { display: block; overflow: visible; }
+  .timeline-area { overflow: visible; }
+  #timeline-wrapper { overflow: visible; height: auto; }
+  #timeline-canvas { min-width: unset !important; transform: scale(.7); transform-origin: top left; }
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .app-body { flex-direction: column; overflow: auto; }
+  .settings-panel {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    gap: 12px;
+    overflow: visible;
+  }
+  .settings-group { min-width: 140px; }
+  .timeline-area { flex: none; min-height: 500px; overflow: auto; }
+  #timeline-wrapper { height: auto; min-height: 500px; }
+}

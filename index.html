@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTECH Board Composition Timeline</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <h1>MTECH Board Composition Timeline</h1>
+    <p>SB240 Rotation Planning Tool &mdash; College Relations Committee</p>
+  </header>
+
+  <div class="app-body">
+
+    <!-- ── SETTINGS PANEL ───────────────────────────────────────────────── -->
+    <aside class="settings-panel">
+
+      <div class="settings-group">
+        <div class="settings-label">Rotation Term Length</div>
+        <select id="term-length">
+          <option value="1">1 year</option>
+          <option value="2">2 years</option>
+          <option value="3">3 years</option>
+          <option value="4" selected>4 years</option>
+          <option value="5">5 years</option>
+          <option value="6">6 years</option>
+        </select>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label">District Seats (max 4)</div>
+        <div class="slider-row">
+          <input type="range" id="seat-count" min="1" max="4" step="1" value="4">
+          <span class="slider-value" id="seat-display">4</span>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label">Seat Turnover</div>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="turnover" value="staggered">
+            Staggered &mdash; seats rotate at different times
+          </label>
+          <label>
+            <input type="radio" name="turnover" value="simultaneous" checked>
+            Simultaneous &mdash; all seats turn over together
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label">District Rotation Order</div>
+
+        <!-- Groups (populated by app.js) -->
+        <div id="groups-area"></div>
+        <button id="add-group-btn" class="add-group-btn">+ New Group</button>
+
+        <!-- Ungrouped pool -->
+        <div class="settings-sublabel" id="ungrouped-label">Ungrouped</div>
+        <div class="district-list" id="district-list"></div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-label">Early Departures</div>
+        <p class="settings-hint">Check any current member who may resign before their term ends, then set the departure date.</p>
+        <div id="resignations-area"></div>
+      </div>
+
+      <div class="settings-note">
+        <strong>Grandfathering:</strong> Current members serve out existing terms.
+        Rotation applies to new/re-appointments after May 6, 2026.<br><br>
+        <strong>Alpine split:</strong> Alpine divides into Aspen Peaks, Lake Mountain &amp;
+        Timpanogos on July 1, 2027. New districts enter the rotation pool from that date.
+      </div>
+
+    </aside>
+
+    <!-- ── TIMELINE ─────────────────────────────────────────────────────── -->
+    <main class="timeline-area">
+      <div id="timeline-wrapper">
+        <div id="timeline-canvas"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

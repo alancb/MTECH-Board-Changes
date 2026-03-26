@@ -154,19 +154,70 @@ function buildGlobalSegments(ungrouped, seatIdx, totalGlobal, seatStart, termLen
   return segs;
 }
 
+// Compute when each rotation seat should actually start.
+// Normally all start at ROTATION_START, but if resignations drop
+// total active seats below the target (state.seats), rotation fills
+// that seat immediately from the vacancy date.
+function computeSeatStartDates() {
+  const { seats, staggered, termLength } = state;
+
+  // Effective end for every grandfathered member
+  const effectiveEnds = GRANDFATHERED.map((gf, i) => {
+    const r = state.resignations[i];
+    return (r && r < gf.termEnd) ? new Date(r) : new Date(gf.termEnd);
+  });
+
+  // Walk through each unique departure date in chronological order
+  const transitions = [...new Set(effectiveEnds.map(d => d.getTime()))]
+    .map(t => new Date(t)).sort((a, b) => a - b);
+
+  const seatStarts = new Array(seats).fill(null);
+
+  for (const transDate of transitions) {
+    const dayAfter    = new Date(transDate.getTime() + 86_400_000);
+    const stillActive = effectiveEnds.filter(end => end > transDate).length;
+    const rotNeeded   = Math.min(Math.max(0, seats - stillActive), seats);
+    const rotFilled   = seatStarts.filter(Boolean).length;
+
+    if (rotFilled >= rotNeeded) continue;
+
+    // Fill rotation seats in index order — a seat is eligible once its
+    // grandfathered member has already departed
+    for (let si = 0; si < seats && seatStarts.filter(Boolean).length < rotNeeded; si++) {
+      if (seatStarts[si]) continue;
+      const gfEnd = si < effectiveEnds.length ? effectiveEnds[si] : null;
+      if (!gfEnd || gfEnd <= transDate) {
+        seatStarts[si] = dayAfter;
+      }
+    }
+  }
+
+  // Any seat not yet assigned gets ROTATION_START (± stagger for that cohort)
+  let staggerIdx = 0;
+  for (let i = 0; i < seats; i++) {
+    if (!seatStarts[i]) {
+      const offset = staggered ? staggerIdx * termLength / seats : 0;
+      seatStarts[i] = addYears(ROTATION_START, offset);
+      staggerIdx++;
+    }
+  }
+
+  return seatStarts;
+}
+
 function buildAllSeats() {
-  const { termLength, staggered, seats, groups } = state;
-  const ungrouped    = getUngroupedIds();
+  const { termLength, seats, groups } = state;
+  const seatStarts    = computeSeatStartDates();
+  const ungrouped     = getUngroupedIds();
   const numGroupSeats = Math.min(groups.length, seats);
-  const numGlobal    = seats - numGroupSeats;
+  const numGlobal     = seats - numGroupSeats;
 
   return Array.from({ length: seats }, (_, i) => {
-    const offset    = staggered ? i * termLength / seats : 0;
-    const seatStart = addYears(ROTATION_START, offset);
+    const seatStart = seatStarts[i];
     if (i < numGroupSeats) {
-      return { type: 'group', group: groups[i], segments: buildGroupSegments(groups[i], seatStart, termLength) };
+      return { type: 'group', group: groups[i], seatStart, segments: buildGroupSegments(groups[i], seatStart, termLength) };
     }
-    return { type: 'global', segments: buildGlobalSegments(ungrouped, i - numGroupSeats, numGlobal, seatStart, termLength) };
+    return { type: 'global', seatStart, segments: buildGlobalSegments(ungrouped, i - numGroupSeats, numGlobal, seatStart, termLength) };
   });
 }
 
@@ -264,10 +315,9 @@ function renderTimeline() {
             ? `${gf.name}\n${gf.districtLabel}\n${fmt(gf.termStart)} \u2013 ${fmt(effectiveEnd)}\nResigned early (term was through ${fmt(gf.termEnd)})`
             : `${gf.name}\n${gf.districtLabel}\n${fmt(gf.termStart)} \u2013 ${fmt(gf.termEnd)}\nGrandfathered under SB240`,
         }));
-        // Vacant gap: from effective end to rotation start for this seat
+        // Vacant gap: from effective end to when this seat's rotation actually starts
         if (inRot) {
-          const offset    = staggered ? i * termLength / seats : 0;
-          const seatStart = addYears(ROTATION_START, offset);
+          const seatStart = seatData[i].seatStart;
           const gapLeft   = dateToX(effectiveEnd);
           const gapW      = dateToX(seatStart) - gapLeft;
           if (gapW > 2) track.appendChild(makeBar({
@@ -276,8 +326,7 @@ function renderTimeline() {
           }));
         }
       } else if (inRot) {
-        const offset    = staggered ? i * termLength / seats : 0;
-        const seatStart = addYears(ROTATION_START, offset);
+        const seatStart = seatData[i].seatStart;
         const gapW      = dateToX(seatStart);
         if (gapW > 2) track.appendChild(makeBar({ left: 0, width: gapW, color: '#ececec', tooltip: 'Seat not yet active', hatched: true }));
       }

@@ -75,6 +75,9 @@ input[type=range] { flex: 1; accent-color: #1a3a5c; }
 .radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .radio-group input[type=radio] { accent-color: #1a3a5c; }
 
+.checkbox-row { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; }
+.checkbox-row input[type=checkbox] { accent-color: #1a3a5c; width: 14px; height: 14px; }
+
 /* District drag list */
 .district-list {
   display: flex;
@@ -102,6 +105,8 @@ input[type=range] { flex: 1; accent-color: #1a3a5c; }
   flex-shrink: 0;
 }
 .district-note { color: #999; font-size: 11px; }
+.district-pop { color: #666; font-size: 11px; margin-left: auto; padding-left: 6px; white-space: nowrap; }
+.group-pop-total { color: #666; font-size: 11px; margin-left: 4px; white-space: nowrap; }
 
 .settings-note {
   font-size: 11px;

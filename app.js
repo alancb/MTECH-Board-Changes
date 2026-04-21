@@ -70,6 +70,18 @@ const DISTRICT_COLORS = {
   'park-city':     '#bab0ac',
 };
 
+const DISTRICT_POPULATIONS = {
+  'aspen-peaks':   { districtStudents: 35000,  mtechStudents: 499 },
+  'lake-mountain': { districtStudents: 25870,  mtechStudents: 285 },
+  'timpanogos':    { districtStudents: 23390,  mtechStudents: 255 },
+  'nebo':          { districtStudents: 42000,  mtechStudents: 410 },
+  'wasatch':       { districtStudents: 8400,   mtechStudents: 88  },
+  'provo':         { districtStudents: 13387,  mtechStudents: 114 },
+  'north-summit':  { districtStudents: 1010,   mtechStudents: 9   },
+  'south-summit':  { districtStudents: 1525,   mtechStudents: 13  },
+  'park-city':     { districtStudents: 3993,   mtechStudents: 43  },
+};
+
 const GROUP_PALETTE = ['#7c3aed', '#0369a1', '#b45309', '#047857', '#be185d', '#9d174d'];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -83,11 +95,20 @@ let state = {
   groups:        [],                           // [{id, name, color, termLength:null, districts:[id,…]}]
   districtOrder: ALL_DISTRICTS.map(d => d.id), // canonical ungrouped order
   resignations:  {},                           // { gfIndex: Date }
+  showPopulation: false,
 };
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 const districtById = id => ALL_DISTRICTS.find(d => d.id === id);
+
+function getGroupPopTotals(group) {
+  return group.districts.reduce((acc, id) => {
+    const p = DISTRICT_POPULATIONS[id];
+    if (p) { acc.districtStudents += p.districtStudents; acc.mtechStudents += p.mtechStudents; }
+    return acc;
+  }, { districtStudents: 0, mtechStudents: 0 });
+}
 
 function dateToX(date) {
   return Math.round((date - TIMELINE_START) / (365.25 * 24 * 3600 * 1000) * YEAR_WIDTH);
@@ -337,17 +358,19 @@ function renderTimeline() {
           const info  = districtById(seg.districtId);
           const left  = dateToX(seg.start);
           const width = dateToX(seg.end) - left;
-          const tip   = [
+
+          const tip = [
             info ? info.name : seg.districtId,
             seg.groupLabel ? `Part of group: ${seg.groupLabel}` : '',
             `Rotation Seat ${seatNum}`,
             `${fmt(seg.start)} \u2013 ${fmt(seg.end)}`,
           ].filter(Boolean).join('\n');
+
           track.appendChild(makeBar({
             left, width,
             color:    DISTRICT_COLORS[seg.districtId] || '#999',
             label:    info ? info.name : seg.districtId,
-            sublabel: seg.groupLabel ? seg.groupLabel : '',
+            sublabel: seg.groupLabel ?? '',
             tooltip:  tip,
           }));
         });
@@ -546,6 +569,14 @@ function buildGroupsSection() {
     badge.style.backgroundColor = hasSeat ? group.color : '#aaa';
     hdr.appendChild(badge);
 
+    if (state.showPopulation && group.districts.length) {
+      const t = getGroupPopTotals(group);
+      const popSpan = document.createElement('span');
+      popSpan.className = 'group-pop-total';
+      popSpan.textContent = `${t.districtStudents.toLocaleString()} dist \u00b7 ${t.mtechStudents.toLocaleString()} MTECH`;
+      hdr.appendChild(popSpan);
+    }
+
     const delBtn = document.createElement('button');
     delBtn.className = 'icon-btn';
     delBtn.textContent = '×';
@@ -593,6 +624,16 @@ function buildGroupsSection() {
           name.appendChild(note);
         }
         item.appendChild(name);
+
+        if (state.showPopulation) {
+          const p = DISTRICT_POPULATIONS[distId];
+          if (p) {
+            const popNote = document.createElement('span');
+            popNote.className = 'district-pop';
+            popNote.textContent = `${p.districtStudents.toLocaleString()} dist \u00b7 ${p.mtechStudents.toLocaleString()} MTECH`;
+            item.appendChild(popNote);
+          }
+        }
 
         const rmBtn = document.createElement('button');
         rmBtn.className = 'icon-btn remove-btn';
@@ -654,6 +695,16 @@ function buildUngroupedList() {
       name.appendChild(note);
     }
     item.appendChild(name);
+
+    if (state.showPopulation) {
+      const p = DISTRICT_POPULATIONS[id];
+      if (p) {
+        const popNote = document.createElement('span');
+        popNote.className = 'district-pop';
+        popNote.textContent = `${p.districtStudents.toLocaleString()} dist \u00b7 ${p.mtechStudents.toLocaleString()} MTECH`;
+        item.appendChild(popNote);
+      }
+    }
 
     if (hasGroups) {
       const sel = document.createElement('select');
@@ -772,6 +823,11 @@ function init() {
   });
 
   document.getElementById('add-group-btn').addEventListener('click', createGroup);
+
+  document.getElementById('show-population').addEventListener('change', e => {
+    state.showPopulation = e.target.checked;
+    buildSettingsPanel();
+  });
 
   buildSettingsPanel();
   renderTimeline();

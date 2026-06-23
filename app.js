@@ -179,7 +179,7 @@ function renderTimeline() {
   const yearHdr = document.createElement('div');
   yearHdr.className = 'year-header';
   yearHdr.style.width = totalWidth() + 'px';
-  for (let y = TIMELINE_START.getFullYear(); y < timelineEnd().getFullYear(); y++) {
+  for (let y = TIMELINE_START.getFullYear(); y < timelineEnd().getFullYear(); y += 2) {
     const tick = document.createElement('span');
     tick.className = 'year-tick';
     tick.style.left = dateToX(new Date(y, 0, 1)) + 'px';
@@ -197,9 +197,9 @@ function renderTimeline() {
   const msRow = document.createElement('div');
   msRow.className = 'milestone-row';
   msRow.style.width = totalWidth() + 'px';
-  KEY_EVENTS.forEach(ev => {
+  KEY_EVENTS.forEach((ev, i) => {
     const ms = document.createElement('div');
-    ms.className = 'milestone';
+    ms.className = 'milestone ' + (i % 2 === 0 ? 'ms-top' : 'ms-bottom');
     ms.style.left = dateToX(ev.date) + 'px';
     ms.title = ev.label + ' — ' + fmt(ev.date);
     ms.innerHTML = `<span class="ms-dot" style="background:${ev.color}"></span>`

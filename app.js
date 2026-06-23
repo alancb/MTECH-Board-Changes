@@ -1,55 +1,57 @@
-// ─── DATA ────────────────────────────────────────────────────────────────────
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────
 
-const YEAR_WIDTH = 88;
-const LABEL_W    = 160; // must match .row-label width in CSS
+const YEAR_WIDTH     = 88;
 const TIMELINE_START = new Date('2025-01-01');
-const TIMELINE_END   = new Date('2041-01-01');
 const ROTATION_START = new Date('2029-07-01');
 
-const KEY_EVENTS = [
-  {
-    date:  new Date('2026-05-06'),
-    label: 'SB240 Effective',
-    desc:  'Rotation required · 4-seat cap on districts',
-    short: "May 6, '26",
-    color: '#1d4ed8',
-  },
-  {
-    date:  new Date('2027-07-01'),
-    label: 'Alpine District Splits',
-    desc:  'Becomes: Aspen Peaks · Lake Mountain · Timpanogos',
-    short: "Jul 1, '27",
-    color: '#b45309',
-  },
-  {
-    date:  new Date('2029-07-01'),
-    label: 'Full Rotation Begins',
-    desc:  'All grandfathered terms expire',
-    short: "Jul 1, '29",
-    color: '#047857',
-  },
-];
+// ─── SEAT DEFINITIONS ────────────────────────────────────────────────────────
 
-const ALL_DISTRICTS = [
-  { id: 'aspen-peaks',   name: 'Aspen Peaks SD',       availableFrom: new Date('2027-07-01') },
-  { id: 'lake-mountain', name: 'Lake Mountain SD',      availableFrom: new Date('2027-07-01') },
-  { id: 'timpanogos',    name: 'Timpanogos SD',         availableFrom: new Date('2027-07-01') },
-  { id: 'nebo',          name: 'Nebo SD',               availableFrom: null },
-  { id: 'wasatch',       name: 'Wasatch County SD',     availableFrom: null },
-  { id: 'south-summit',  name: 'South Summit SD',       availableFrom: null },
-  { id: 'provo',         name: 'Provo SD',              availableFrom: null },
-  { id: 'north-summit',  name: 'North Summit SD',       availableFrom: null },
-  { id: 'park-city',     name: 'Park City SD',          availableFrom: null },
+const SEATS = [
+  {
+    id: 'north', label: 'North Seat',
+    districts: [
+      { id: 'park-city',    name: 'Park City SD',     color: '#1d4ed8' },
+      { id: 'north-summit', name: 'North Summit SD',  color: '#3b82f6' },
+      { id: 'south-summit', name: 'South Summit SD',  color: '#93c5fd' },
+    ],
+  },
+  {
+    id: 'central', label: 'Central Seat',
+    districts: [
+      { id: 'timpanogos', name: 'Timpanogos SD',     color: '#b45309' },
+      { id: 'wasatch',    name: 'Wasatch County SD', color: '#f59e0b' },
+    ],
+  },
+  {
+    id: 'west', label: 'West Seat',
+    districts: [
+      { id: 'lake-mountain', name: 'Lake Mountain SD', color: '#15803d' },
+      { id: 'aspen-peaks',   name: 'Aspen Peaks SD',   color: '#4ade80' },
+    ],
+  },
+  {
+    id: 'south', label: 'South Seat',
+    districts: [
+      { id: 'nebo',  name: 'Nebo SD',  color: '#b91c1c' },
+      { id: 'provo', name: 'Provo SD', color: '#f87171' },
+    ],
+  },
 ];
 
 const GRANDFATHERED = [
-  { name: 'Julie King',         district: 'alpine',       districtLabel: 'Alpine SD',         termStart: new Date('2025-01-01'), termEnd: new Date('2027-06-30') },
-  { name: 'Meredith Reed',      district: 'park-city',    districtLabel: 'Park City SD',      termStart: new Date('2025-01-01'), termEnd: new Date('2027-06-30') },
-  { name: 'Rick Ainge',         district: 'nebo',         districtLabel: 'Nebo SD',           termStart: new Date('2025-01-01'), termEnd: new Date('2029-06-30') },
-  { name: 'Breanne Dedrickson', district: 'wasatch',      districtLabel: 'Wasatch County SD', termStart: new Date('2025-01-01'), termEnd: new Date('2029-06-30') },
-  { name: 'Dan Eckert',         district: 'south-summit', districtLabel: 'South Summit SD',   termStart: new Date('2025-01-01'), termEnd: new Date('2029-06-30') },
-  { name: 'Melanie Hall',       district: 'provo',        districtLabel: 'Provo SD',          termStart: new Date('2025-01-01'), termEnd: new Date('2029-06-30') },
-  { name: 'Maggie Judi',        district: 'north-summit', districtLabel: 'North Summit SD',   termStart: new Date('2025-01-01'), termEnd: new Date('2029-06-30') },
+  { name: 'Julie King',         district: 'Alpine SD',         color: '#6366f1', termEnd: new Date('2027-06-30'), note: '→ splits Jul ’27' },
+  { name: 'Meredith Reed',      district: 'Park City SD',      color: '#1d4ed8', termEnd: new Date('2027-06-30') },
+  { name: 'Rick Ainge',         district: 'Nebo SD',           color: '#b91c1c', termEnd: new Date('2029-06-30') },
+  { name: 'Breanne Dedrickson', district: 'Wasatch County SD', color: '#b45309', termEnd: new Date('2029-06-30') },
+  { name: 'Dan Eckert',         district: 'South Summit SD',   color: '#93c5fd', termEnd: new Date('2029-06-30') },
+  { name: 'Melanie Hall',       district: 'Provo SD',          color: '#f87171', termEnd: new Date('2029-06-30') },
+  { name: 'Maggie Judi',        district: 'North Summit SD',   color: '#3b82f6', termEnd: new Date('2029-06-30') },
+];
+
+const KEY_EVENTS = [
+  { date: new Date('2026-05-06'), label: 'SB240 Effective',       sub: "May 6, '26",  color: '#1d4ed8' },
+  { date: new Date('2027-07-01'), label: 'Alpine District Splits', sub: "Jul 1, '27", color: '#b45309' },
+  { date: new Date('2029-07-01'), label: 'Full Rotation Begins',   sub: "Jul 1, '29", color: '#15803d' },
 ];
 
 const GOV_MEMBERS = [
@@ -57,69 +59,28 @@ const GOV_MEMBERS = [
   'Megan Johnson', 'Vanessa Perez', 'Brad Tanner', 'Paul Thompson', 'Eric Weeks',
 ];
 
-const DISTRICT_COLORS = {
-  'alpine':        '#4e79a7',
-  'aspen-peaks':   '#59a14f',
-  'lake-mountain': '#76b7b2',
-  'timpanogos':    '#edc948',
-  'nebo':          '#f28e2b',
-  'wasatch':       '#e15759',
-  'south-summit':  '#b07aa1',
-  'provo':         '#ff9da7',
-  'north-summit':  '#9c755f',
-  'park-city':     '#bab0ac',
-};
-
-const DISTRICT_POPULATIONS = {
-  'aspen-peaks':   { districtStudents: 35000,  mtechStudents: 499 },
-  'lake-mountain': { districtStudents: 25870,  mtechStudents: 285 },
-  'timpanogos':    { districtStudents: 23390,  mtechStudents: 255 },
-  'nebo':          { districtStudents: 42000,  mtechStudents: 410 },
-  'wasatch':       { districtStudents: 8400,   mtechStudents: 88  },
-  'provo':         { districtStudents: 13387,  mtechStudents: 114 },
-  'north-summit':  { districtStudents: 1010,   mtechStudents: 9   },
-  'south-summit':  { districtStudents: 1525,   mtechStudents: 13  },
-  'park-city':     { districtStudents: 3993,   mtechStudents: 43  },
-};
-
-const GROUP_PALETTE = ['#7c3aed', '#0369a1', '#b45309', '#047857', '#be185d', '#9d174d'];
-
 // ─── STATE ───────────────────────────────────────────────────────────────────
 
-let nextGroupNum = 1;
+let termLength = 4;
 
-let state = {
-  termLength:    4,
-  seats:         4,
-  staggered:     false,
-  groups:        [],                           // [{id, name, color, termLength:null, districts:[id,…]}]
-  districtOrder: ALL_DISTRICTS.map(d => d.id), // canonical ungrouped order
-  resignations:  {},                           // { gfIndex: Date }
-  showPopulation: false,
-};
+// ─── TIME HELPERS ─────────────────────────────────────────────────────────────
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-
-const districtById = id => ALL_DISTRICTS.find(d => d.id === id);
-
-function getGroupPopTotals(group) {
-  return group.districts.reduce((acc, id) => {
-    const p = DISTRICT_POPULATIONS[id];
-    if (p) { acc.districtStudents += p.districtStudents; acc.mtechStudents += p.mtechStudents; }
-    return acc;
-  }, { districtStudents: 0, mtechStudents: 0 });
+function timelineEnd() {
+  return termLength === 4 ? new Date('2053-01-01') : new Date('2073-01-01');
 }
 
 function dateToX(date) {
   return Math.round((date - TIMELINE_START) / (365.25 * 24 * 3600 * 1000) * YEAR_WIDTH);
 }
-const totalWidth = () => dateToX(TIMELINE_END);
 
-function addYears(date, years) {
+function totalWidth() {
+  return dateToX(timelineEnd());
+}
+
+function addYears(date, yrs) {
   const d = new Date(date);
-  const whole = Math.floor(years);
-  d.setFullYear(d.getFullYear() + whole);
-  const rem = years - whole;
+  d.setFullYear(d.getFullYear() + Math.floor(yrs));
+  const rem = yrs - Math.floor(yrs);
   if (rem) d.setDate(d.getDate() + Math.round(rem * 365.25));
   return d;
 }
@@ -128,713 +89,246 @@ function fmt(date) {
   return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 }
 
-function getGroupedIds() {
-  return new Set(state.groups.flatMap(g => g.districts));
-}
+// ─── RENDERING PRIMITIVES ────────────────────────────────────────────────────
 
-function getUngroupedIds() {
-  const grouped = getGroupedIds();
-  return state.districtOrder.filter(id => !grouped.has(id));
-}
-
-// ─── ROTATION ALGORITHM ───────────────────────────────────────────────────────
-//
-// Groups each claim one dedicated seat and cycle through their members forever.
-// Remaining seats share the ungrouped pool in round-robin order.
-
-function buildGroupSegments(group, seatStart, globalTermLength) {
-  if (!group.districts.length) return [];
-  const tl = group.termLength ?? globalTermLength; // per-group override or inherit global
-  const segs = [];
-  let t = new Date(seatStart), idx = 0;
-  while (t < TIMELINE_END) {
-    const distId = group.districts[idx % group.districts.length];
-    const end    = addYears(t, tl);
-    segs.push({ districtId: distId, start: new Date(t), end: end < TIMELINE_END ? end : new Date(TIMELINE_END), groupLabel: group.name });
-    t = end; idx++;
-  }
-  return segs;
-}
-
-function buildGlobalSegments(ungrouped, seatIdx, totalGlobal, seatStart, termLength) {
-  if (!totalGlobal || !ungrouped.length) return [];
-  const segs = [];
-  let t = new Date(seatStart), termIdx = 0;
-  while (t < TIMELINE_END) {
-    const available = ungrouped.filter(id => {
-      const d = districtById(id);
-      return !d || !d.availableFrom || d.availableFrom <= t;
-    });
-    if (available.length) {
-      const idx = (seatIdx + termIdx * totalGlobal) % available.length;
-      const end = addYears(t, termLength);
-      segs.push({ districtId: available[idx], start: new Date(t), end: end < TIMELINE_END ? end : new Date(TIMELINE_END) });
-    }
-    t = addYears(t, termLength); termIdx++;
-  }
-  return segs;
-}
-
-// Compute when each rotation seat should actually start.
-// Normally all start at ROTATION_START, but if resignations drop
-// total active seats below the target (state.seats), rotation fills
-// that seat immediately from the vacancy date.
-function computeSeatStartDates() {
-  const { seats, staggered, termLength } = state;
-
-  // Effective end for every grandfathered member
-  const effectiveEnds = GRANDFATHERED.map((gf, i) => {
-    const r = state.resignations[i];
-    return (r && r < gf.termEnd) ? new Date(r) : new Date(gf.termEnd);
-  });
-
-  // Walk through each unique departure date in chronological order
-  const transitions = [...new Set(effectiveEnds.map(d => d.getTime()))]
-    .map(t => new Date(t)).sort((a, b) => a - b);
-
-  const seatStarts = new Array(seats).fill(null);
-
-  for (const transDate of transitions) {
-    const dayAfter    = new Date(transDate.getTime() + 86_400_000);
-    const stillActive = effectiveEnds.filter(end => end > transDate).length;
-    const rotNeeded   = Math.min(Math.max(0, seats - stillActive), seats);
-    const rotFilled   = seatStarts.filter(Boolean).length;
-
-    if (rotFilled >= rotNeeded) continue;
-
-    // Fill rotation seats in index order — a seat is eligible once its
-    // grandfathered member has already departed
-    for (let si = 0; si < seats && seatStarts.filter(Boolean).length < rotNeeded; si++) {
-      if (seatStarts[si]) continue;
-      const gfEnd = si < effectiveEnds.length ? effectiveEnds[si] : null;
-      if (!gfEnd || gfEnd <= transDate) {
-        seatStarts[si] = dayAfter;
-      }
-    }
-  }
-
-  // Any seat not yet assigned gets ROTATION_START (± stagger for that cohort)
-  let staggerIdx = 0;
-  for (let i = 0; i < seats; i++) {
-    if (!seatStarts[i]) {
-      const offset = staggered ? staggerIdx * termLength / seats : 0;
-      seatStarts[i] = addYears(ROTATION_START, offset);
-      staggerIdx++;
-    }
-  }
-
-  return seatStarts;
-}
-
-function buildAllSeats() {
-  const { termLength, seats, groups } = state;
-  const seatStarts    = computeSeatStartDates();
-  const ungrouped     = getUngroupedIds();
-  const numGroupSeats = Math.min(groups.length, seats);
-  const numGlobal     = seats - numGroupSeats;
-
-  return Array.from({ length: seats }, (_, i) => {
-    const seatStart = seatStarts[i];
-    if (i < numGroupSeats) {
-      return { type: 'group', group: groups[i], seatStart, segments: buildGroupSegments(groups[i], seatStart, termLength) };
-    }
-    return { type: 'global', seatStart, segments: buildGlobalSegments(ungrouped, i - numGroupSeats, numGlobal, seatStart, termLength) };
-  });
-}
-
-// ─── BAR FACTORY ─────────────────────────────────────────────────────────────
-
-function makeBar({ left, width, color, label, sublabel, tooltip, hatched = false }) {
-  const bar = document.createElement('div');
-  bar.className = 'bar' + (hatched ? ' bar-hatched' : '');
-  bar.style.left  = left + 'px';
-  bar.style.width = Math.max(width - 2, 4) + 'px';
-  bar.style.backgroundColor = color || '#ccc';
-  if (tooltip) bar.title = tooltip;
-  if (label && width > 38) {
+function makeBar({ left, width, color, label, tooltip, hatched = false }) {
+  const el = document.createElement('div');
+  el.className = 'bar' + (hatched ? ' bar-hatched' : '');
+  el.style.left  = left + 'px';
+  el.style.width = Math.max(width - 2, 4) + 'px';
+  el.style.backgroundColor = color || '#ccc';
+  if (tooltip) el.title = tooltip;
+  if (label && width > 36) {
     const s = document.createElement('span');
-    s.className = 'bar-label'; s.textContent = label;
-    bar.appendChild(s);
+    s.className   = 'bar-label';
+    s.textContent = label;
+    el.appendChild(s);
   }
-  if (sublabel && width > 90) {
-    const s = document.createElement('span');
-    s.className = 'bar-sublabel'; s.textContent = sublabel;
-    bar.appendChild(s);
-  }
-  return bar;
+  return el;
 }
 
-// ─── TIMELINE RENDER ─────────────────────────────────────────────────────────
-
-function renderTimeline() {
-  const { termLength, seats, staggered, groups } = state;
-  const tl = document.getElementById('timeline-canvas');
-  tl.innerHTML = '';
-  tl.style.minWidth = totalWidth() + 'px';
-
-  const seatData      = buildAllSeats();
-  const numGroupSeats = Math.min(groups.length, seats);
-  const totalRows     = Math.max(GRANDFATHERED.length, seats);
-
-  // ── Year header (year numbers only) ──────────────────────────────────────
-  const yearHdr = document.createElement('div');
-  yearHdr.className = 'year-header';
-  yearHdr.style.width = totalWidth() + 'px';
-  for (let y = TIMELINE_START.getFullYear(); y < TIMELINE_END.getFullYear(); y++) {
-    const tick = document.createElement('span');
-    tick.className = 'year-tick';
-    tick.style.left = (dateToX(new Date(y, 0, 1)) + LABEL_W) + 'px';
-    tick.textContent = y;
-    yearHdr.appendChild(tick);
-  }
-  tl.appendChild(yearHdr);
-
-  // ── Milestone row (key events, two staggered rows so nothing overlaps) ───
-  // Row 0 (top: 4px) : SB240 (x≈120) and Full Rotation (x≈396) — far apart
-  // Row 1 (top: 24px): Alpine Split (x≈220) — between the other two
-  const msRow = document.createElement('div');
-  msRow.className = 'milestone-row';
-  msRow.style.width = totalWidth() + 'px';
-  KEY_EVENTS.forEach((ev, i) => {
-    const ms = document.createElement('div');
-    ms.className = 'milestone';
-    ms.style.left = (dateToX(ev.date) + LABEL_W) + 'px';
-    ms.style.top  = (i === 1 ? 24 : 4) + 'px';
-    ms.style.setProperty('--ec', ev.color);
-    ms.title = `${ev.label} — ${fmt(ev.date)}\n${ev.desc}`;
-    ms.innerHTML =
-      `<span class="ms-dot"></span>` +
-      `<span class="ms-text"><b>${ev.label}</b><small>${ev.short}</small></span>`;
-    msRow.appendChild(ms);
-  });
-  tl.appendChild(msRow);
-
-  // ── School District rows ──────────────────────────────────────────────────
-  addSectionHeader(tl, `School District Seats (up to ${seats} rotating)`);
-
-  for (let i = 0; i < totalRows; i++) {
-    const gf       = GRANDFATHERED[i];
-    const seatNum  = i + 1;
-    const inRot    = i < seats;
-    const rowLabel = inRot && i < numGroupSeats ? groups[i].name : `Seat ${seatNum}`;
-
-    addRow(tl, rowLabel, track => {
-      // Grandfathered bar
-      if (gf) {
-        const resignDate   = state.resignations[i];
-        const effectiveEnd = resignDate && resignDate < gf.termEnd ? resignDate : gf.termEnd;
-        const resigned     = effectiveEnd !== gf.termEnd;
-        const left  = dateToX(gf.termStart);
-        const width = dateToX(effectiveEnd) - left;
-        const sub   = gf.districtLabel + (gf.district === 'alpine' ? ' (\u2192 splits Jul \u201927)' : '');
-        track.appendChild(makeBar({
-          left, width,
-          color:    DISTRICT_COLORS[gf.district] || '#aaa',
-          label:    gf.name,
-          sublabel: resigned ? sub + ' \u00b7 Resigned' : sub,
-          tooltip:  resigned
-            ? `${gf.name}\n${gf.districtLabel}\n${fmt(gf.termStart)} \u2013 ${fmt(effectiveEnd)}\nResigned early (term was through ${fmt(gf.termEnd)})`
-            : `${gf.name}\n${gf.districtLabel}\n${fmt(gf.termStart)} \u2013 ${fmt(gf.termEnd)}\nGrandfathered under SB240`,
-        }));
-        // Vacant gap: from effective end to when this seat's rotation actually starts
-        if (inRot) {
-          const seatStart = seatData[i].seatStart;
-          const gapLeft   = dateToX(effectiveEnd);
-          const gapW      = dateToX(seatStart) - gapLeft;
-          if (gapW > 2) track.appendChild(makeBar({
-            left: gapLeft, width: gapW, color: '#e4e4e4', hatched: true,
-            tooltip: resigned ? `Seat vacant \u2014 ${gf.name} resigned ${fmt(effectiveEnd)}` : 'Seat vacant',
-          }));
-        }
-      } else if (inRot) {
-        const seatStart = seatData[i].seatStart;
-        const gapW      = dateToX(seatStart);
-        if (gapW > 2) track.appendChild(makeBar({ left: 0, width: gapW, color: '#ececec', tooltip: 'Seat not yet active', hatched: true }));
-      }
-
-      // Rotation bars
-      if (inRot) {
-        seatData[i].segments.forEach(seg => {
-          const info  = districtById(seg.districtId);
-          const left  = dateToX(seg.start);
-          const width = dateToX(seg.end) - left;
-
-          const tip = [
-            info ? info.name : seg.districtId,
-            seg.groupLabel ? `Part of group: ${seg.groupLabel}` : '',
-            `Rotation Seat ${seatNum}`,
-            `${fmt(seg.start)} \u2013 ${fmt(seg.end)}`,
-          ].filter(Boolean).join('\n');
-
-          track.appendChild(makeBar({
-            left, width,
-            color:    DISTRICT_COLORS[seg.districtId] || '#999',
-            label:    info ? info.name : seg.districtId,
-            sublabel: seg.groupLabel ?? '',
-            tooltip:  tip,
-          }));
-        });
-      }
-    });
-  }
-
-  // ── Governor Appointments ─────────────────────────────────────────────────
-  addSectionHeader(tl, 'Governor Appointments (9 seats)');
-  addRow(tl, 'Gov. Appts.', track => {
-    track.appendChild(makeBar({
-      left: 0, width: totalWidth(),
-      color:   '#6baed6',
-      label:   '9 Governor Appointments',
-      tooltip: GOV_MEMBERS.join('\n'),
-    }));
-  });
-
-  // ── Higher Education ──────────────────────────────────────────────────────
-  addSectionHeader(tl, 'Higher Education (1 seat)');
-  addRow(tl, 'UVU', track => {
-    track.appendChild(makeBar({
-      left: 0, width: totalWidth(),
-      color:   '#74c476',
-      label:   'Brad Herbert \u2013 Utah Valley University',
-      tooltip: 'Brad Herbert\nUtah Valley University\nHigher Education Partner',
-    }));
-  });
-
-  // ── Marker layer (Today + Events) ─────────────────────────────────────────
-  const markerLayer = document.createElement('div');
-  markerLayer.className = 'marker-layer';
-  markerLayer.style.width = totalWidth() + 'px';
-  tl.appendChild(markerLayer);
-
-  requestAnimationFrame(() => {
-    markerLayer.style.height = (tl.scrollHeight + 20) + 'px';
-
-    // Today line
-    const todayX    = dateToX(new Date()) + LABEL_W;
-    const todayLine = document.createElement('div');
-    todayLine.className = 'today-marker';
-    todayLine.style.left = todayX + 'px';
-    todayLine.title = 'Today \u2014 ' + fmt(new Date());
-    const todayLbl = document.createElement('span');
-    todayLbl.className = 'today-label';
-    todayLbl.textContent = 'Today';
-    todayLine.appendChild(todayLbl);
-    markerLayer.appendChild(todayLine);
-
-  });
+// A label-column entry
+function makeLabel(html, extraClass = '') {
+  const el = document.createElement('div');
+  el.className = 'row-label' + (extraClass ? ' ' + extraClass : '');
+  el.innerHTML = html;
+  return el;
 }
 
-function addSectionHeader(container, title) {
-  const h = document.createElement('div');
-  h.className = 'section-header';
-  h.textContent = title;
-  container.appendChild(h);
-}
-
-function addRow(container, label, fill) {
+// A track-area row
+function makeTrackRow(trackFn) {
   const row = document.createElement('div');
-  row.className = 'timeline-row';
-  const lbl = document.createElement('div');
-  lbl.className = 'row-label';
-  lbl.textContent = label;
-  lbl.title = label;
-  row.appendChild(lbl);
+  row.className = 'track-row';
   const track = document.createElement('div');
   track.className = 'track';
   track.style.width = totalWidth() + 'px';
-  fill(track);
+  trackFn(track);
   row.appendChild(track);
-  container.appendChild(row);
+  return row;
 }
 
-// ─── SETTINGS PANEL ──────────────────────────────────────────────────────────
-
-function buildSettingsPanel() {
-  buildGroupsSection();
-  buildUngroupedList();
-  buildResignationsSection();
+// Matching spacer/header in label col
+function makeLabelHeader(text, extraClass = '') {
+  const el = document.createElement('div');
+  el.className = 'section-header' + (extraClass ? ' ' + extraClass : '');
+  el.textContent = text;
+  return el;
 }
 
-function buildResignationsSection() {
-  const area = document.getElementById('resignations-area');
-  if (!area) return;
-  area.innerHTML = '';
+// Matching section header in track canvas
+function makeTrackHeader(text) {
+  const el = document.createElement('div');
+  el.className = 'section-header';
+  el.textContent = text;
+  return el;
+}
 
-  GRANDFATHERED.forEach((member, i) => {
-    const hasResignation = state.resignations[i] instanceof Date;
+// ─── ROTATION SEGMENTS ───────────────────────────────────────────────────────
 
-    const row = document.createElement('div');
-    row.className = 'resignation-row';
-
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.id   = `resign-chk-${i}`;
-    cb.checked = hasResignation;
-    row.appendChild(cb);
-
-    const lbl = document.createElement('label');
-    lbl.htmlFor = `resign-chk-${i}`;
-    lbl.className = 'resignation-label';
-    lbl.innerHTML = `<span class="resignation-name">${member.name}</span>`
-                  + `<span class="resignation-dist">${member.districtLabel} &middot; through ${fmt(member.termEnd)}</span>`;
-    row.appendChild(lbl);
-
-    const dateInp = document.createElement('input');
-    dateInp.type  = 'date';
-    dateInp.className = 'resignation-date';
-    dateInp.min   = '2025-01-01';
-    dateInp.max   = member.termEnd.toISOString().slice(0, 10);
-    dateInp.style.display = hasResignation ? '' : 'none';
-    if (hasResignation) {
-      dateInp.value = state.resignations[i].toISOString().slice(0, 10);
-    } else {
-      // Default: midpoint between today and term end
-      const mid = new Date((Date.now() + member.termEnd.getTime()) / 2);
-      dateInp.value = (mid < member.termEnd ? mid : member.termEnd).toISOString().slice(0, 10);
-    }
-
-    cb.addEventListener('change', () => {
-      if (cb.checked) {
-        state.resignations[i] = new Date(dateInp.value);
-        dateInp.style.display = '';
-      } else {
-        delete state.resignations[i];
-        dateInp.style.display = 'none';
-      }
-      renderTimeline();
+function buildSeatSegments(seat) {
+  const segments = [];
+  let t = new Date(ROTATION_START);
+  let i = 0;
+  while (t < timelineEnd()) {
+    const dist = seat.districts[i % seat.districts.length];
+    const end  = addYears(t, termLength);
+    segments.push({
+      name:  dist.name,
+      color: dist.color,
+      start: new Date(t),
+      end:   end < timelineEnd() ? end : new Date(timelineEnd()),
     });
+    t = end;
+    i++;
+  }
+  return segments;
+}
 
-    dateInp.addEventListener('change', () => {
-      if (cb.checked && dateInp.value) {
-        state.resignations[i] = new Date(dateInp.value);
-        renderTimeline();
-      }
-    });
+// ─── MAIN RENDERER ───────────────────────────────────────────────────────────
 
-    row.appendChild(dateInp);
-    area.appendChild(row);
+function renderTimeline() {
+  const canvas   = document.getElementById('timeline-canvas');
+  const labelCol = document.getElementById('label-col');
+  const wrapper  = document.getElementById('timeline-wrapper');
+
+  canvas.innerHTML   = '';
+  labelCol.innerHTML = '';
+  canvas.style.width = totalWidth() + 'px';
+
+  // ── Year header ────────────────────────────────────────────────────────────
+  const yearHdr = document.createElement('div');
+  yearHdr.className = 'year-header';
+  yearHdr.style.width = totalWidth() + 'px';
+  for (let y = TIMELINE_START.getFullYear(); y < timelineEnd().getFullYear(); y++) {
+    const tick = document.createElement('span');
+    tick.className = 'year-tick';
+    tick.style.left = dateToX(new Date(y, 0, 1)) + 'px';
+    tick.textContent = y;
+    yearHdr.appendChild(tick);
+  }
+  canvas.appendChild(yearHdr);
+
+  // Spacer in label col to match year header height
+  const lblYearSpacer = document.createElement('div');
+  lblYearSpacer.className = 'year-header label-spacer';
+  labelCol.appendChild(lblYearSpacer);
+
+  // ── Milestone row ──────────────────────────────────────────────────────────
+  const msRow = document.createElement('div');
+  msRow.className = 'milestone-row';
+  msRow.style.width = totalWidth() + 'px';
+  KEY_EVENTS.forEach(ev => {
+    const ms = document.createElement('div');
+    ms.className = 'milestone';
+    ms.style.left = dateToX(ev.date) + 'px';
+    ms.title = ev.label + ' — ' + fmt(ev.date);
+    ms.innerHTML = `<span class="ms-dot" style="background:${ev.color}"></span>`
+      + `<span class="ms-label" style="color:${ev.color}">${ev.label}<small>${ev.sub}</small></span>`;
+    msRow.appendChild(ms);
   });
-}
+  canvas.appendChild(msRow);
 
-function buildGroupsSection() {
-  const area = document.getElementById('groups-area');
-  area.innerHTML = '';
-  const { seats, groups } = state;
+  const lblMsSpacer = document.createElement('div');
+  lblMsSpacer.className = 'milestone-row label-spacer';
+  labelCol.appendChild(lblMsSpacer);
 
-  groups.forEach((group, gi) => {
-    const hasSeat = gi < seats;
+  // ── Grandfathered members ──────────────────────────────────────────────────
+  labelCol.appendChild(makeLabelHeader('Current Members'));
+  canvas.appendChild(makeTrackHeader('Serving Grandfathered Terms'));
 
-    const block = document.createElement('div');
-    block.className = 'group-block';
-    block.dataset.groupId = group.id;
-    block.style.setProperty('--gc', group.color);
+  GRANDFATHERED.forEach(gf => {
+    const distText = gf.district + (gf.note ? ' ' + gf.note : '');
+    labelCol.appendChild(makeLabel(
+      `<span class="member-name">${gf.name}</span><span class="member-dist">${distText}</span>`
+    ));
 
-    // Header row
-    const hdr = document.createElement('div');
-    hdr.className = 'group-header';
+    canvas.appendChild(makeTrackRow(track => {
+      const left  = 0;
+      const width = dateToX(gf.termEnd);
+      track.appendChild(makeBar({
+        left, width,
+        color:   gf.color,
+        label:   gf.name,
+        tooltip: `${gf.name}\n${gf.district}\nThrough ${fmt(gf.termEnd)}\nGrandfathered under SB240`,
+      }));
+    }));
+  });
 
-    const dot = document.createElement('span');
-    dot.className = 'group-dot';
-    dot.style.backgroundColor = group.color;
-    hdr.appendChild(dot);
+  // ── Rotating seats ─────────────────────────────────────────────────────────
+  labelCol.appendChild(makeLabelHeader('Rotating Seats'));
+  canvas.appendChild(makeTrackHeader(`${termLength}-Year Terms, Beginning July 2029`));
 
-    const inp = document.createElement('input');
-    inp.className = 'group-name-input';
-    inp.value = group.name;
-    inp.addEventListener('input',  () => renameGroup(group.id, inp.value));
-    inp.addEventListener('click',  e => e.stopPropagation());
-    hdr.appendChild(inp);
+  SEATS.forEach(seat => {
+    const segments = buildSeatSegments(seat);
+    const vacWidth = dateToX(ROTATION_START);
 
-    // Per-group term length
-    const termSel = document.createElement('select');
-    termSel.className = 'group-term-select';
-    termSel.title = 'Term length for this group (overrides global)';
-    [{ v: '', l: `Global (${state.termLength}yr)` }, { v:1,l:'1 yr' }, { v:2,l:'2 yr' },
-     { v:3,l:'3 yr' }, { v:4,l:'4 yr' }, { v:5,l:'5 yr' }, { v:6,l:'6 yr' }].forEach(({ v, l }) => {
-      const opt = document.createElement('option');
-      opt.value = v; opt.textContent = l;
-      if ((group.termLength ?? '') == v) opt.selected = true;
-      termSel.appendChild(opt);
-    });
-    termSel.addEventListener('change', e => {
-      const g = state.groups.find(g => g.id === group.id);
-      if (g) { g.termLength = e.target.value ? +e.target.value : null; renderTimeline(); }
-    });
-    termSel.addEventListener('click', e => e.stopPropagation());
-    hdr.appendChild(termSel);
+    labelCol.appendChild(makeLabel(`<span class="seat-label">${seat.label}</span>`));
 
-    const badge = document.createElement('span');
-    badge.className = 'group-seat-badge';
-    badge.textContent = hasSeat ? `Seat ${gi + 1}` : 'No seat';
-    badge.style.backgroundColor = hasSeat ? group.color : '#aaa';
-    hdr.appendChild(badge);
-
-    if (state.showPopulation && group.districts.length) {
-      const t = getGroupPopTotals(group);
-      const popSpan = document.createElement('span');
-      popSpan.className = 'group-pop-total';
-      popSpan.textContent = `${t.districtStudents.toLocaleString()} dist \u00b7 ${t.mtechStudents.toLocaleString()} MTECH`;
-      hdr.appendChild(popSpan);
-    }
-
-    const delBtn = document.createElement('button');
-    delBtn.className = 'icon-btn';
-    delBtn.textContent = '×';
-    delBtn.title = 'Delete group — districts return to pool';
-    delBtn.addEventListener('click', () => deleteGroup(group.id));
-    hdr.appendChild(delBtn);
-
-    block.appendChild(hdr);
-
-    // Members list
-    const memberList = document.createElement('div');
-    memberList.className = 'group-members';
-    memberList.dataset.groupId = group.id;
-
-    if (!group.districts.length) {
-      const hint = document.createElement('div');
-      hint.className = 'group-empty-hint';
-      hint.textContent = 'No districts — use + buttons below';
-      memberList.appendChild(hint);
-    } else {
-      group.districts.forEach(distId => {
-        const d    = districtById(distId);
-        const item = document.createElement('div');
-        item.className = 'district-item';
-        item.dataset.id = distId;
-        item.draggable = true;
-
-        const handle = document.createElement('span');
-        handle.className = 'drag-handle';
-        handle.textContent = '\u28bf';
-        item.appendChild(handle);
-
-        const ddot = document.createElement('span');
-        ddot.className = 'district-dot';
-        ddot.style.backgroundColor = DISTRICT_COLORS[distId] || '#ccc';
-        item.appendChild(ddot);
-
-        const name = document.createElement('span');
-        name.className = 'district-name';
-        name.textContent = d ? d.name : distId;
-        if (d?.availableFrom) {
-          const note = document.createElement('span');
-          note.className = 'district-note';
-          note.textContent = ' (from Jul \u201927)';
-          name.appendChild(note);
-        }
-        item.appendChild(name);
-
-        if (state.showPopulation) {
-          const p = DISTRICT_POPULATIONS[distId];
-          if (p) {
-            const popNote = document.createElement('span');
-            popNote.className = 'district-pop';
-            popNote.textContent = `${p.districtStudents.toLocaleString()} dist \u00b7 ${p.mtechStudents.toLocaleString()} MTECH`;
-            item.appendChild(popNote);
-          }
-        }
-
-        const rmBtn = document.createElement('button');
-        rmBtn.className = 'icon-btn remove-btn';
-        rmBtn.textContent = '×';
-        rmBtn.title = 'Remove from group';
-        rmBtn.addEventListener('click', () => removeFromGroup(distId));
-        item.appendChild(rmBtn);
-
-        memberList.appendChild(item);
+    canvas.appendChild(makeTrackRow(track => {
+      track.appendChild(makeBar({
+        left: 0, width: vacWidth,
+        color: '#e5e7eb', hatched: true,
+        tooltip: 'Seat fills July 2029 when grandfathered terms expire',
+      }));
+      segments.forEach(seg => {
+        const left  = dateToX(seg.start);
+        const width = dateToX(seg.end) - left;
+        track.appendChild(makeBar({
+          left, width,
+          color:   seg.color,
+          label:   seg.name,
+          tooltip: `${seg.name}\n${seat.label}\n${fmt(seg.start)} – ${fmt(seg.end)}`,
+        }));
       });
-
-      // Within-group drag reorder
-      setupSortable(memberList, () => {
-        const g = state.groups.find(g => g.id === group.id);
-        if (g) {
-          g.districts = [...memberList.querySelectorAll('.district-item')].map(el => el.dataset.id);
-          renderTimeline();
-        }
-      });
-    }
-
-    block.appendChild(memberList);
-    area.appendChild(block);
-  });
-}
-
-function buildUngroupedList() {
-  const list      = document.getElementById('district-list');
-  const sublabel  = document.getElementById('ungrouped-label');
-  const ungrouped = getUngroupedIds();
-  const hasGroups = state.groups.length > 0;
-  list.innerHTML  = '';
-  sublabel.style.display = hasGroups ? '' : 'none';
-
-  ungrouped.forEach(id => {
-    const d    = districtById(id);
-    const item = document.createElement('div');
-    item.className = 'district-item';
-    item.dataset.id = id;
-    item.draggable  = true;
-
-    const handle = document.createElement('span');
-    handle.className = 'drag-handle';
-    handle.textContent = '\u28bf';
-    item.appendChild(handle);
-
-    const dot = document.createElement('span');
-    dot.className = 'district-dot';
-    dot.style.backgroundColor = DISTRICT_COLORS[id] || '#ccc';
-    item.appendChild(dot);
-
-    const name = document.createElement('span');
-    name.className = 'district-name';
-    name.textContent = d ? d.name : id;
-    if (d?.availableFrom) {
-      const note = document.createElement('span');
-      note.className = 'district-note';
-      note.textContent = ' (from Jul \u201927)';
-      name.appendChild(note);
-    }
-    item.appendChild(name);
-
-    if (state.showPopulation) {
-      const p = DISTRICT_POPULATIONS[id];
-      if (p) {
-        const popNote = document.createElement('span');
-        popNote.className = 'district-pop';
-        popNote.textContent = `${p.districtStudents.toLocaleString()} dist \u00b7 ${p.mtechStudents.toLocaleString()} MTECH`;
-        item.appendChild(popNote);
-      }
-    }
-
-    if (hasGroups) {
-      const sel = document.createElement('select');
-      sel.className = 'group-assign-select';
-      sel.title = 'Add to group';
-      const dflt = document.createElement('option');
-      dflt.value = ''; dflt.textContent = '+ group';
-      sel.appendChild(dflt);
-      state.groups.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g.id; opt.textContent = g.name;
-        sel.appendChild(opt);
-      });
-      sel.addEventListener('change', () => { if (sel.value) addToGroup(id, sel.value); });
-      item.appendChild(sel);
-    }
-
-    list.appendChild(item);
+    }));
   });
 
-  setupSortable(list, () => {
-    const grouped = getGroupedIds();
-    const newOrder = [...list.querySelectorAll('.district-item')].map(el => el.dataset.id);
-    // Keep grouped districts at end of districtOrder (their position doesn't matter for ungrouped)
-    state.districtOrder = [
-      ...newOrder,
-      ...state.districtOrder.filter(id => grouped.has(id)),
-    ];
-    renderTimeline();
+  // ── Governor appointments ──────────────────────────────────────────────────
+  labelCol.appendChild(makeLabelHeader('Governor Appts.'));
+  canvas.appendChild(makeTrackHeader('Governor Appointments — 9 Seats'));
+
+  labelCol.appendChild(makeLabel('Gov. Appts. (9)'));
+  canvas.appendChild(makeTrackRow(track => {
+    track.appendChild(makeBar({
+      left: 0, width: totalWidth(),
+      color: '#6baed6',
+      label: '9 Governor Appointments',
+      tooltip: GOV_MEMBERS.join('\n'),
+    }));
+  }));
+
+  // ── Higher Education ───────────────────────────────────────────────────────
+  labelCol.appendChild(makeLabelHeader('Higher Education'));
+  canvas.appendChild(makeTrackHeader('Higher Education — 1 Seat'));
+
+  labelCol.appendChild(makeLabel('UVU'));
+  canvas.appendChild(makeTrackRow(track => {
+    track.appendChild(makeBar({
+      left: 0, width: totalWidth(),
+      color: '#74c476',
+      label: 'Brad Herbert – Utah Valley University',
+      tooltip: 'Brad Herbert\nUtah Valley University\nHigher Education Partner',
+    }));
+  }));
+
+  // ── Today marker ───────────────────────────────────────────────────────────
+  const markerLayer = document.createElement('div');
+  markerLayer.className = 'marker-layer';
+  markerLayer.style.width = totalWidth() + 'px';
+  canvas.appendChild(markerLayer);
+
+  requestAnimationFrame(() => {
+    markerLayer.style.height = canvas.scrollHeight + 'px';
+    const todayX = dateToX(new Date());
+    const line   = document.createElement('div');
+    line.className = 'today-marker';
+    line.style.left = todayX + 'px';
+    line.title = 'Today — ' + fmt(new Date());
+    const todayLbl = document.createElement('span');
+    todayLbl.className = 'today-label';
+    todayLbl.textContent = 'Today';
+    line.appendChild(todayLbl);
+    markerLayer.appendChild(line);
   });
-}
 
-// ─── DRAG-SORT ────────────────────────────────────────────────────────────────
-
-function setupSortable(listEl, onDone) {
-  let dragging = null;
-  listEl.querySelectorAll('.district-item').forEach(item => {
-    item.addEventListener('dragstart', e => {
-      dragging = item;
-      item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      dragging = null;
-      onDone();
-    });
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (!dragging || dragging === item || dragging.parentElement !== listEl) return;
-      const { top, height } = item.getBoundingClientRect();
-      listEl.insertBefore(dragging, e.clientY < top + height / 2 ? item : item.nextSibling);
-    });
-  });
-}
-
-// ─── GROUP ACTIONS ────────────────────────────────────────────────────────────
-
-function createGroup() {
-  const id    = 'group-' + Date.now();
-  const color = GROUP_PALETTE[state.groups.length % GROUP_PALETTE.length];
-  state.groups.push({ id, name: `Group ${nextGroupNum++}`, color, districts: [] });
-  buildSettingsPanel();
-  renderTimeline();
-}
-
-function deleteGroup(groupId) {
-  state.groups = state.groups.filter(g => g.id !== groupId);
-  buildSettingsPanel();
-  renderTimeline();
-}
-
-function addToGroup(districtId, groupId) {
-  state.groups.forEach(g => g.districts = g.districts.filter(d => d !== districtId));
-  const g = state.groups.find(g => g.id === groupId);
-  if (g) g.districts.push(districtId);
-  buildSettingsPanel();
-  renderTimeline();
-}
-
-function removeFromGroup(districtId) {
-  state.groups.forEach(g => g.districts = g.districts.filter(d => d !== districtId));
-  buildSettingsPanel();
-  renderTimeline();
-}
-
-function renameGroup(groupId, newName) {
-  const g = state.groups.find(g => g.id === groupId);
-  if (g) { g.name = newName; renderTimeline(); } // don't rebuild settings panel — that kills the input focus
+  // Scroll to show today; sync vertical scroll from wrapper → label col
+  wrapper.scrollLeft = Math.max(0, dateToX(new Date()) - 220);
+  wrapper.onscroll = () => { labelCol.scrollTop = wrapper.scrollTop; };
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 function init() {
-  const termSel     = document.getElementById('term-length');
-  const seatSlider  = document.getElementById('seat-count');
-  const seatDisplay = document.getElementById('seat-display');
-
-  termSel.value = state.termLength;
-  termSel.addEventListener('change', () => { state.termLength = +termSel.value; renderTimeline(); });
-
-  seatSlider.value = state.seats;
-  seatDisplay.textContent = state.seats;
-  seatSlider.addEventListener('input', () => {
-    state.seats = +seatSlider.value;
-    seatDisplay.textContent = state.seats;
-    buildGroupsSection(); // update seat badges
-    renderTimeline();
-  });
-
-  document.querySelectorAll('input[name="turnover"]').forEach(r => {
-    r.addEventListener('change', () => {
-      state.staggered = document.querySelector('input[name="turnover"]:checked').value === 'staggered';
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      termLength = parseInt(btn.dataset.term);
       renderTimeline();
     });
   });
 
-  document.getElementById('add-group-btn').addEventListener('click', createGroup);
-
-  document.getElementById('show-population').addEventListener('change', e => {
-    state.showPopulation = e.target.checked;
-    buildSettingsPanel();
-  });
-
-  buildSettingsPanel();
   renderTimeline();
-
-  // Scroll to near current date
-  const wrapper = document.getElementById('timeline-wrapper');
-  wrapper.scrollLeft = Math.max(0, dateToX(new Date()) + LABEL_W - 200);
 }
 
 document.addEventListener('DOMContentLoaded', init);

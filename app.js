@@ -25,8 +25,8 @@ const SEATS = [
   {
     id: 'west', label: 'West Seat',
     districts: [
-      { id: 'lake-mountain', name: 'Lake Mountain SD', color: '#15803d' },
       { id: 'aspen-peaks',   name: 'Aspen Peaks SD',   color: '#4ade80' },
+      { id: 'lake-mountain', name: 'Lake Mountain SD', color: '#15803d' },
     ],
   },
   {

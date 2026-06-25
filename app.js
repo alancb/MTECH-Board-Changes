@@ -59,6 +59,12 @@ const GOV_MEMBERS = [
   'Megan Johnson', 'Vanessa Perez', 'Brad Tanner', 'Paul Thompson', 'Eric Weeks',
 ];
 
+// Chair alternates between Education and Industry each chair term
+const CHAIR_TYPES = [
+  { label: 'Education', color: '#0e7490' },
+  { label: 'Industry',  color: '#b45309' },
+];
+
 // ─── STATE ───────────────────────────────────────────────────────────────────
 
 let termLength = 4;
@@ -144,6 +150,26 @@ function makeTrackHeader(text) {
 }
 
 // ─── ROTATION SEGMENTS ───────────────────────────────────────────────────────
+
+function chairTermYears() {
+  return termLength === 4 ? 1 : 2;
+}
+
+function buildChairSegments() {
+  const yrs = chairTermYears();
+  const chair = [], elect = [];
+  let t = new Date(TIMELINE_START);
+  let i = 0;
+  while (t < timelineEnd()) {
+    const end    = addYears(t, yrs);
+    const segEnd = end < timelineEnd() ? end : new Date(timelineEnd());
+    chair.push({ ...CHAIR_TYPES[i % 2],       start: new Date(t), end: segEnd });
+    elect.push({ ...CHAIR_TYPES[(i + 1) % 2], start: new Date(t), end: segEnd });
+    t = end;
+    i++;
+  }
+  return { chair, elect };
+}
 
 function buildSeatSegments(seat) {
   const segments = [];
@@ -289,6 +315,40 @@ function renderTimeline() {
       label: 'Brad Herbert – Utah Valley University',
       tooltip: 'Brad Herbert\nUtah Valley University\nHigher Education Partner',
     }));
+  }));
+
+  // ── Board Chair ────────────────────────────────────────────────────────────
+  const { chair: chairSegs, elect: electSegs } = buildChairSegments();
+  const chairYrs = chairTermYears();
+  const chairSubhead = chairYrs === 1 ? '1-Year Chair Terms' : '2-Year Chair Terms';
+
+  labelCol.appendChild(makeLabelHeader('Board Chair'));
+  canvas.appendChild(makeTrackHeader(`${chairSubhead} — Education ↔ Industry`));
+
+  labelCol.appendChild(makeLabel('<span class="seat-label">Chair</span>'));
+  canvas.appendChild(makeTrackRow(track => {
+    chairSegs.forEach(seg => {
+      const left  = dateToX(seg.start);
+      const width = dateToX(seg.end) - left;
+      track.appendChild(makeBar({
+        left, width, color: seg.color,
+        label:   seg.label,
+        tooltip: `Board Chair — ${seg.label}\n${fmt(seg.start)} – ${fmt(seg.end)}`,
+      }));
+    });
+  }));
+
+  labelCol.appendChild(makeLabel('Chair Elect'));
+  canvas.appendChild(makeTrackRow(track => {
+    electSegs.forEach(seg => {
+      const left  = dateToX(seg.start);
+      const width = dateToX(seg.end) - left;
+      track.appendChild(makeBar({
+        left, width, color: seg.color,
+        label:   seg.label,
+        tooltip: `Chair Elect — ${seg.label}\n${fmt(seg.start)} – ${fmt(seg.end)}`,
+      }));
+    });
   }));
 
   // ── Today marker ───────────────────────────────────────────────────────────

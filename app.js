@@ -158,8 +158,8 @@ function chairTermYears() {
 function buildChairSegments() {
   const yrs = chairTermYears();
   const chair = [], elect = [];
-  let t = new Date(TIMELINE_START);
-  let i = 0;
+  let t = new Date(ROTATION_START); // begins July 2029
+  let i = 1; // start at 1 so first chair is CHAIR_TYPES[1] = Industry
   while (t < timelineEnd()) {
     const end    = addYears(t, yrs);
     const segEnd = end < timelineEnd() ? end : new Date(timelineEnd());
@@ -331,9 +331,15 @@ function renderTimeline() {
   labelCol.appendChild(makeSpacer());
   canvas.appendChild(makeSpacer());
 
+  const vacChairW = dateToX(ROTATION_START);
+
   labelCol.appendChild(makeLabel('<span class="seat-label">Board Chair</span>'));
   canvas.appendChild(makeTrackRow(track => {
-    track.title = chairInfo;
+    track.appendChild(makeBar({
+      left: 0, width: vacChairW,
+      color: '#e5e7eb', hatched: true,
+      tooltip: 'Board Chair rotation begins July 2029',
+    }));
     chairSegs.forEach(seg => {
       const left  = dateToX(seg.start);
       const width = dateToX(seg.end) - left;
@@ -347,6 +353,11 @@ function renderTimeline() {
 
   labelCol.appendChild(makeLabel('Chair Elect'));
   canvas.appendChild(makeTrackRow(track => {
+    track.appendChild(makeBar({
+      left: 0, width: vacChairW,
+      color: '#e5e7eb', hatched: true,
+      tooltip: 'Chair Elect rotation begins July 2029',
+    }));
     electSegs.forEach(seg => {
       const left  = dateToX(seg.start);
       const width = dateToX(seg.end) - left;

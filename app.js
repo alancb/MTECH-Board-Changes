@@ -320,13 +320,20 @@ function renderTimeline() {
   // ── Board Chair ────────────────────────────────────────────────────────────
   const { chair: chairSegs, elect: electSegs } = buildChairSegments();
   const chairYrs = chairTermYears();
-  const chairSubhead = chairYrs === 1 ? '1-Year Chair Terms' : '2-Year Chair Terms';
+  const chairInfo = `${chairYrs}-year chair terms — Education ↔ Industry`;
 
-  labelCol.appendChild(makeLabelHeader('Board Chair'));
-  canvas.appendChild(makeTrackHeader(`${chairSubhead} — Education ↔ Industry`));
+  // Use a fixed-height spacer in both panels so rows stay in sync
+  function makeSpacer() {
+    const el = document.createElement('div');
+    el.className = 'section-spacer';
+    return el;
+  }
+  labelCol.appendChild(makeSpacer());
+  canvas.appendChild(makeSpacer());
 
-  labelCol.appendChild(makeLabel('<span class="seat-label">Chair</span>'));
+  labelCol.appendChild(makeLabel('<span class="seat-label">Board Chair</span>'));
   canvas.appendChild(makeTrackRow(track => {
+    track.title = chairInfo;
     chairSegs.forEach(seg => {
       const left  = dateToX(seg.start);
       const width = dateToX(seg.end) - left;
